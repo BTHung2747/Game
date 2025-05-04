@@ -1,5 +1,13 @@
 import { useEffect, useRef } from 'react';
 import spriteSrc from '../../assets/images/sprite.png';
+import gameOver from '../../assets/images/gameover.png';
+import messageImgSrc from '../../assets/images/message.png';
+import downFlapSrc from '../../assets/images/yellowbird-downflap.png';
+import midFlapSrc from '../../assets/images/yellowbird-midflap.png';
+import upFlapSrc from '../../assets/images/yellowbird-upflap.png';
+import pipeTopImgSrc from '../../assets/images/pipe2.png';
+import pipeBottomImgSrc from '../../assets/images/pipe.png';
+
 
 const GameCanvas = () => {
   const canvasRef = useRef(null);
@@ -13,6 +21,25 @@ const GameCanvas = () => {
 
     const sprites = new Image();
     sprites.src = spriteSrc;
+    const gameOverImg = new Image();
+    gameOverImg.src = gameOver ; 
+    const messageImg = new Image();
+    messageImg.src = messageImgSrc;
+
+    const downFlap = new Image();
+    downFlap.src = downFlapSrc;
+    
+    const midFlap = new Image();
+    midFlap.src = midFlapSrc;
+    
+    const upFlap = new Image();
+    upFlap.src = upFlapSrc;
+    
+    const pipeTopImg = new Image();
+    pipeTopImg.src = pipeTopImgSrc;
+
+   const pipeBottomImg = new Image();
+   pipeBottomImg.src = pipeBottomImgSrc;
 
 let game = 'start';
 let frame = 0
@@ -20,16 +47,15 @@ let frame = 0
 const start = {
     draw: function(){
         ctx.beginPath();
-        ctx.drawImage(sprites,1022,0,219,49, canvas.width/2 - 114, 50, 228, 61)  // plappy bird
-        ctx.drawImage(sprites,1012,62,236,64, canvas.width/2 - 118, 200, 236, 64) // get ready
-        ctx.drawImage(sprites,855, 157, 140, 126, canvas.width/2 - 70, 350, 140, 126) // tap 
+        ctx.drawImage(messageImg, canvas.width / 2 - messageImg.width / 2, 200);
+
     }
 }
 // manf end
 const end = {
     draw: function(){
         ctx.beginPath();
-        ctx.drawImage(sprites, 1012, 126, 246, 54, canvas.width/2 - 123, 200, 246, 54)
+        ctx.drawImage(gameOverImg, canvas.width / 2 - gameOverImg.width / 2, 200);
         ctx.drawImage(sprites, 630, 439, 284, 138, canvas.width/2 - 145, 350, 284, 138)
         ctx.drawImage(sprites, 631.79, 583.92, 76, 41, canvas.width/2 - 41.5, 500, 76, 41)
     }
@@ -103,28 +129,22 @@ function random(min,max) {
 
 // duong ong
 class Pipes {
-  constructor(cX,cY, space){
+    constructor(cX, cY, space) {
       this.cX = cX;
       this.cY = cY;
-      this.cW = 82;
-      this.cH = 710;
+      this.cW = 82; 
+      this.cH = 710; 
       this.space = space;
-      this.sXt= 0;
-      this.sYt= 0;
-      this.sXb = 1261;
-      this.sYb = 0;
-      this.sW = 82;
-      this.sH = 710;
-      this.dx= -2;
-  }
-
-  draw(){
+      this.dx = -2;
+    }
+  
+    draw() {
       ctx.beginPath();
-      ctx.drawImage(sprites, this.sXt, this.sYt, this.sW, this.sH, this.cX, this.cY, this.cW, this.cH);
-      ctx.drawImage(sprites, this.sXb, this.sYb, this.sW, this.sH, this.cX, this.cY + this.cH + this.space, this.cW, this.cH);
+      ctx.drawImage(pipeTopImg, this.cX, this.cY, this.cW, this.cH);
+      ctx.drawImage(pipeBottomImg, this.cX, this.cY + this.cH + this.space, this.cW, this.cH);
+    }
   }
-
-}
+  
 
 let arrPipes = [];
 
@@ -152,6 +172,7 @@ function updateArrPipe(){
       arrPipes.push(pipe);
   }
   
+
 }                      
 
 
@@ -227,46 +248,36 @@ let score = new Score(0, 340, 391);
 let maxScore = new Score(0 , 340 , 443);
 // class Bird 
 class Bird {
-    constructor(cX,cY){
-        this.cX= cX;
-        this.cY= cY;
-        this.animate = [
-            {sX:840,sY:0},
-            {sX:900, sY: 0},
-            {sX:960, sY: 0}
-
-        ]
-        this.sW= 51;
-        this.sH= 36;
-        this.cW= 51;
-        this.cH= 36;
+    constructor(cX, cY) {
+        this.cX = cX;
+        this.cY = cY;
+        this.cW = 51; // chiều rộng ảnh riêng
+        this.cH = 36; // chiều cao ảnh riêng
         this.i = 0;
         this.v = 0;
         this.a = 0.1;
+
+        this.animate = [downFlap, midFlap, upFlap];
     }
 
-    draw(){
+    draw() {
         ctx.beginPath();
-        if (game== 'start'){ // chim doi canhs
-            if(frame % 35 ==0){
-                this.i++;
-                if(this.i > 2){
-                    this.i=0
-                }
+
+        // thay đổi frame theo game state
+        if (game === 'start') {
+            if (frame % 35 === 0) {
+                this.i = (this.i + 1) % 3;
             }
-        }
-        if(game == 'play'){
-            if(frame % 16 == 0){
-                this.i++;
-                if(this.i > 2){
-                    this.i = 0
-                }
+        } else if (game === 'play') {
+            if (frame % 16 === 0) {
+                this.i = (this.i + 1) % 3;
             }
         }
 
-        ctx.drawImage(sprites, this.animate[this.i].sX, this.animate[this.i].sY,this.sW, this.sH, this.cX, this.cY, this.cW, this.cH)
-
+        const img = this.animate[this.i];
+        ctx.drawImage(img, this.cX, this.cY, this.cW, this.cH);
     }
+
     update(){
         if(game == 'play' || game== 'end'){
             this.v += this.a;
