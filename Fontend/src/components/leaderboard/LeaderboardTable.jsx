@@ -20,7 +20,17 @@ const LeaderboardTable = () => {
 
     fetchLeaderboard();
   }, []);
-
+  const getRankDisplay = (index) => {
+    const trophies = ["🏆", "🥈", "🥉"];
+    return (
+      <div className="rank-cell">
+        {index < 3 ? trophies[index] : index + 1}
+      </div>
+    );
+  };
+  
+  
+  
   if (loading) return <p className="loading">⏳ Đang tải bảng xếp hạng...</p>;
 
   return (
@@ -37,7 +47,7 @@ const LeaderboardTable = () => {
         <tbody>
           {leaderboard.map((user, index) => (
             <tr key={user.telegram_id}>
-              <td>{index + 1}</td>
+              <td className="rank">{getRankDisplay(index)}</td>
               <td className="player">
                 <img src={user.avatar} alt="avatar" />
                 <span>{user.name}</span>
@@ -50,5 +60,4 @@ const LeaderboardTable = () => {
     </div>
   );
 };
-
-export default LeaderboardTable; 
+export default LeaderboardTable;  

@@ -7,7 +7,7 @@ const Header = () => {
 
   return (
     <div className="flex items-center justify-between px-4 py-2 bg-blue-500 text-white rounded-b-2xl shadow-md">
-      <div className="text-lg font-semibold">🐔 Chicken Shooter</div>
+      <div className="text-lg font-semibold"></div>
       {user && (
         <div className="flex items-center gap-2">
           <img
