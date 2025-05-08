@@ -1,45 +1,33 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import './style.css';
 
 import LeaderboardPage from './pages/LeaderboardPage';
 import GamePage from './pages/GamePage';
-
-function Home() {
-  const navigate = useNavigate();
-  return (
-    <div className="flex flex-col items-center justify-center h-full">
-      <p className="mb-6 text-lg">Chào mừng bạn đến với trò chơi </p>
-      <button
-        onClick={() => navigate('/game')}
-        className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold px-6 py-3 rounded-xl shadow-lg transition"
-      >
-        Bắt đầu chơi
-      </button>
-    </div>
-  );
-}
+import GameHomePage from './pages/GameHomePage'; // ✅ import GameHomePage
 
 function AppLayout() {
   const location = useLocation();
   const isGamePage = location.pathname === '/game';
+  const isHomePage = location.pathname === '/'; // ✅ kiểm tra nếu đang ở GameHome
 
   return (
-    <div className="App p-4 min-h-screen bg-sky-100">
-      {!isGamePage && (
-        <>
+    <div className="App min-h-screen bg-sky-100">
+      {!(isGamePage || isHomePage) && ( // ✅ ẩn header nếu đang ở /game hoặc /
+        <div className="p-4">
           <h1 className="text-3xl font-bold mb-6 text-center">Flappy Bird Mini App</h1>
           <nav className="mb-6 text-center">
             <Link to="/" className="mr-4 text-blue-600 hover:underline">Trang chủ</Link>
             <Link to="/leaderboard" className="text-blue-600 hover:underline">Bảng xếp hạng</Link>
           </nav>
-        </>
+        </div>
       )}
 
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/leaderboard" element={<LeaderboardPage />} />
+        <Route path="/" element={<GameHomePage />} /> {/* ✅ hiển thị đầu tiên */}
         <Route path="/game" element={<GamePage />} />
+        <Route path="/leaderboard" element={<LeaderboardPage />} />
+        <Route path="*" element={<GamePage />} /> {/* fallback */}
       </Routes>
     </div>
   );

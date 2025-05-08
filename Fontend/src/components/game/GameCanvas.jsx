@@ -243,6 +243,7 @@ class Score {
         }
     }
 }
+let scoreSent = false;
 
 let score = new Score(0, 340, 391);
 let maxScore = new Score(0 , 340 , 443);
@@ -287,6 +288,10 @@ class Bird {
                 game = 'end';
                 this.v= 0 ;
                 this.cY = 625 ;
+                if (!scoreSent) {
+                    sendScore(score.value);
+                    scoreSent = true;
+                }
 
             }
             // va cham duong ong 
@@ -299,7 +304,11 @@ class Bird {
 
 
              ){
-                game = 'end'
+                game = 'end';
+                if (!scoreSent) {
+                    sendScore(score.value);
+                    scoreSent = true;
+                }
              }
              // an diem
              if(bird.cX == arrPipes[0].cX + 82 || bird.cX == arrPipes[0].cX + 81){
@@ -335,6 +344,7 @@ canvas.addEventListener('click', function(event){
                 newPipes();
                 bird.v = 0;
                 bird.cY = canvas.height / 2 - 12;
+                scoreSent = false;
                 game = 'start' ; 
 
             }
@@ -371,6 +381,34 @@ function update(){
     }
     bird.update();
 }
+// api post điểm
+function sendScore(score) {
+    const telegramId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+
+    if (!telegramId) {
+        console.error('Không tìm thấy telegram_id từ Telegram WebApp');
+        return;
+    }
+
+    fetch('http://localhost:3000/api/score', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            telegram_id: telegramId,
+            score: score,
+        }),
+    })
+    .then(res => res.json())
+    .then(data => {
+        console.log('Gửi điểm thành công:', data);
+    })
+    .catch(err => {
+        console.error('Lỗi gửi điểm:', err);
+    });
+}
+
 
 
 function animate() {
